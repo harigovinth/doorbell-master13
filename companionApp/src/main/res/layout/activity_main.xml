@@ -21,8 +21,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textOCR"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:text="Hello world"
+        android:layout_marginLeft="20dp"
         android:layout_below="@id/imageViewOCRIMAGE"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="10dp"/>
 
 
 </RelativeLayout>
