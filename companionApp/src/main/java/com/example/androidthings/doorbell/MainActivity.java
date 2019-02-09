@@ -194,16 +194,11 @@ public class MainActivity extends AppCompatActivity {
         FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance()
                 .getOnDeviceTextRecognizer();
 
-        //ImageView imageView = findViewById(R.id.imageViewOCRIMAGE);
         final TextView textView = findViewById(R.id.textOCR);
 
-
         Log.d("TEXT OCR", "TEXT CHECK - 1");
-        //imageView.setImageBitmap(bitmap);
 
-        //final String text;
-
-        Task<FirebaseVisionText> result =
+        final Task<FirebaseVisionText> result =
                 detector.processImage(image)
                         .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
                             @Override
@@ -218,10 +213,9 @@ public class MainActivity extends AppCompatActivity {
 
                                     textView.setText(text);
 
+
+
                                     Log.d("TEXT OCR", "TEXT CHECK - 2");
-
-                                    Log.d("OCR Text: ", text);
-
 
 
                                 }
