@@ -17,13 +17,18 @@ package com.example.androidthings.doorbell;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,10 +40,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
+import com.google.firebase.ml.vision.document.FirebaseVisionDocumentText;
+import com.google.firebase.ml.vision.document.FirebaseVisionDocumentTextRecognizer;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import java.util.Locale;
 
 //import com.firebase.client.ValueEventListener;
 
@@ -48,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     //private DoorbellEntryAdapter mAdapter;
     //private FirebaseStorage mFirebaseStorage;
 
+    String text = "";
+
 
 
 
@@ -56,39 +68,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Reference for doorbell events from embedded device
-       // DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("logs");
-       // StorageReference imageRef = FirebaseStorage.getInstance().getReference();
+
+        Button btnTTS = findViewById(R.id.btnTTS);
+        Button btnTTSStop = findViewById(R.id.btnTTSStop);
+
+        final TextToSpeech tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+
+                if(i == TextToSpeech.SUCCESS)
+                {
+                    Toast.makeText(MainActivity.this, "TTS Initialization Success "+i,Toast.LENGTH_SHORT);
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this, "TTS Initialization Failed "+i, Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("logs/OCRIMAGE");
 
 
-        //Bitmap bitmap;
-
         final ImageView imageView = findViewById(R.id.imageViewOCRIMAGE);
-
-        /*imageRef.child("OCR_IMAGE.jpeg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-
-                try
-                {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-
-                    //ocrTextRecognization(bitmap);
-
-                    imageView.setImageBitmap(bitmap);
-
-                }
-                catch(Exception ex)
-                {
-                    System.out.println(ex.getMessage());
-                }
-
-            }
-        });
-*/
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @SuppressLint("SetTextI18n")
@@ -102,26 +106,6 @@ public class MainActivity extends AppCompatActivity {
                     imageURL = imageURL.replaceAll("\\]","");
                     imageURL = imageURL.replaceAll("\\[","");
 
-
-					/*To use Picasso, you have to add this dependency:
-
-					 implementation 'com.squareup.picasso:picasso:2.5.2'
-
-					 if any latest dependency is available, use it.
-					*/
-
-                    //Picasso.with(MainActivity.this).load(imageURL).resize(320, 240).into(imageView);
-
-
-
-					/*THis should help you get the bitmap object from the imageURL. Just try this and convert the imageURL to URI, and use
-					that uri to convert it into the bitmap like this:
-                    */
-					//Uri uri = Uri.parse(imageURL);
-
-					//now since you have obtained the uri object, you can try this and check if the bitmap works.
-
-//                    Bitmap bitmap;
 
                     Picasso.with(MainActivity.this)
                             .load(imageURL)
@@ -149,21 +133,6 @@ public class MainActivity extends AppCompatActivity {
                             });
 
 
-                    /*try
-                    {
-                       bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                        imageView.setImageBitmap(bitmap);
-                    }
-                    catch(Exception ex) {
-
-                        Toast.makeText(MainActivity.this,"SOmething is wrong with the bitmap",Toast.LENGTH_SHORT);
-                    }*/
-
-
-					//try the above two lines of code. If your Picasso.with() works, then this should also probably work.
-
-
-
                 }
             }
 
@@ -175,16 +144,48 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnTTS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        //mRecyclerView = (RecyclerView) findViewById(R.id.doorbellView);
-        // Show most recent items at the top
-        //LinearLayoutManager layoutManager =
-          //      new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
-        //mRecyclerView.setLayoutManager(layoutManager);
+                Toast.makeText(MainActivity.this, "Text: "+text, Toast.LENGTH_SHORT).show();
 
-        // Initialize RecyclerView adapter
-        //mAdapter = new DoorbellEntryAdapter(this, ref);
-        //mRecyclerView.setAdapter(mAdapter);
+                if(text.equals(""))
+                {
+                    tts.setLanguage(Locale.ENGLISH);
+                    int status = tts.speak("Hello WOrld",TextToSpeech.QUEUE_FLUSH,null,null);
+
+                    if(status == TextToSpeech.ERROR)
+                    {
+                        Toast.makeText(MainActivity.this, "Error in talking the content .. 1", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+                else
+                {
+                    tts.setLanguage(Locale.ENGLISH);
+                    int status = tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+
+                    if(status == TextToSpeech.ERROR)
+                    {
+                        Toast.makeText(MainActivity.this, "Error in talking the content .. 2", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+            }
+        });
+
+        btnTTSStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tts.stop();
+
+            }
+        });
+
+
     }
 
     public void ocrTextRecognization(Bitmap bitmap)
@@ -194,11 +195,22 @@ public class MainActivity extends AppCompatActivity {
         FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance()
                 .getOnDeviceTextRecognizer();
 
+        FirebaseVisionImageMetadata metadata = new FirebaseVisionImageMetadata.Builder()
+                .setWidth(480)   // 480x360 is typically sufficient for
+                .setHeight(360)  // image recognition
+                .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
+                .build();
+
+        FirebaseVisionDocumentTextRecognizer detectorDoc = FirebaseVision.getInstance()
+                .getCloudDocumentTextRecognizer();
+
         final TextView textView = findViewById(R.id.textOCR);
+
+        final Typeface tf = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/OpenDyslexic3-Regular.ttf");
 
         Log.d("TEXT OCR", "TEXT CHECK - 1");
 
-        final Task<FirebaseVisionText> result =
+        Task<FirebaseVisionText> result =
                 detector.processImage(image)
                         .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
                             @Override
@@ -206,20 +218,29 @@ public class MainActivity extends AppCompatActivity {
                                 // Task completed successfully
                                 // ...
 
-                                for(FirebaseVisionText.TextBlock block: firebaseVisionText.getTextBlocks())
-                                {
+                                for (FirebaseVisionText.TextBlock block: firebaseVisionText.getTextBlocks()) {
 
-                                    String text = block.getText();
+                                    text = block.getText();
+
+                                    textView.setTypeface(tf);
 
                                     textView.setText(text);
 
 
 
-                                    Log.d("TEXT OCR", "TEXT CHECK - 2");
+                                    for (FirebaseVisionText.Line line: block.getLines()) {
 
+                                        //text = line.getText();
+                                      //  textView.setText(text);
 
+                                        for (FirebaseVisionText.Element element: line.getElements()) {
+
+                                            //text = element.getText();
+                                            //textView.setText(text);
+
+                                        }
+                                    }
                                 }
-
                             }
                         })
                         .addOnFailureListener(
@@ -228,12 +249,55 @@ public class MainActivity extends AppCompatActivity {
                                     public void onFailure(@NonNull Exception e) {
                                         // Task failed with an exception
                                         // ...
-                                        Log.d("Task Exception:", e.getMessage());
                                     }
                                 });
 
 
+        detectorDoc.processImage(image)
+                .addOnSuccessListener(new OnSuccessListener<FirebaseVisionDocumentText>() {
+                    @Override
+                    public void onSuccess(FirebaseVisionDocumentText result) {
+                        // Task completed successfully
+                        // ...
 
+                        //String text;
+
+                        for(FirebaseVisionDocumentText.Block block : result.getBlocks())
+                        {
+
+
+                            //text = block.getText();
+                            //textView.setText(text);
+
+                            /*for (FirebaseVisionDocumentText.Paragraph paragraph : block.getParagraphs())
+                            {
+                                text = paragraph.getText();
+                                //textView.setText(text);
+
+                              *//*for (FirebaseVisionDocumentText.Word word : paragraph.getWords())
+                                {
+                                    //text = word.getText();
+                                    //textView.setText(text);
+
+                                   *//**//*for (FirebaseVisionDocumentText.Symbol symbol : word.getSymbols())
+                                        text = symbol.getText();
+                                    textView.setText(text);*//**//*
+
+                                }*//*
+                            }*/
+                        }
+
+
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Task failed with an exception
+                        // ...
+                    }
+                });
 
     }
 
@@ -243,7 +307,6 @@ public class MainActivity extends AppCompatActivity {
 
        /* // Initialize Firebase listeners in adapter
         mAdapter.startListening();
-
         // Make sure new events are visible
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -260,5 +323,4 @@ public class MainActivity extends AppCompatActivity {
         // Tear down Firebase listeners in adapter
         //mAdapter.stopListening();
     }
-
 }
