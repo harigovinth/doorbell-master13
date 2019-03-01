@@ -24,33 +24,156 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textOCR"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="#000000"
-            android:text="Hello world"
+            android:text="Full text: "
             android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:layout_below="@id/imageViewOCRIMAGE"
+
+            android:layout_marginTop="10dp"
+            android:id="@+id/textHeading2"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textOCR"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:text="Full Text..."
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="20dp"
+            android:layout_below="@id/textHeading2"
+            android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textOCR"
-            android:layout_marginTop="30dp"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/btnTTS"
-            android:text="Talk text"/>
 
-        <Button
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/btnTTS"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="20dp"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/btnTTSStop"
-            android:text="Stop Talk text"/>
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:text="What the context is about:"
+            android:layout_marginLeft="20dp"
+            android:layout_below="@id/textOCR"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:id="@+id/textHeading1"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginBottom="10dp"
+            android:text="Summarized Text..."
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="20dp"
+            android:layout_below="@id/textHeading1"
+            android:layout_marginTop="10dp"
+            android:id="@+id/text_Summaarized"/>
+
+
+        <LinearLayout
+            android:layout_height="70dp"
+            android:layout_width="match_parent"
+            android:layout_below="@id/text_Summaarized"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:id="@+id/linearLayout1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_centerInParent="true"
+                        android:id="@+id/btnTTS"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        android:text="Know the full\ncontext"/>
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_centerInParent="true"
+                        android:id="@+id/btnSummary"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        android:text="Know the summarized context "/>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_height="70dp"
+            android:layout_width="match_parent"
+            android:layout_below="@id/linearLayout1"
+            android:id="@+id/linearLayout2"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerInParent="true"
+                        android:id="@+id/btnTTSStop"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        android:layout_marginBottom="20dp"
+                        android:text="Stop"/>
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
 
     </RelativeLayout>>
 

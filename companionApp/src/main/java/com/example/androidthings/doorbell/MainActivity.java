@@ -41,26 +41,25 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
-import com.google.firebase.ml.vision.document.FirebaseVisionDocumentText;
 import com.google.firebase.ml.vision.document.FirebaseVisionDocumentTextRecognizer;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 //import com.firebase.client.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
 
     //private DoorbellEntryAdapter mAdapter;
     //private FirebaseStorage mFirebaseStorage;
 
+    ArrayList<String> arraylistText = new ArrayList<>();
+
     String text = "";
-
-
 
 
     @Override
@@ -70,7 +69,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         Button btnTTS = findViewById(R.id.btnTTS);
+        Button btnSummary = findViewById(R.id.btnSummary);
         Button btnTTSStop = findViewById(R.id.btnTTSStop);
+
+        TextView textView1 = findViewById(R.id.textHeading1);
+        TextView textView2 = findViewById(R.id.textHeading2);
+
+        Typeface tftf = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/OpenDyslexic-Bold.ttf");
+
+        textView1.setTypeface(tftf);
+        textView2.setTypeface(tftf);
 
         final TextToSpeech tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -78,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if(i == TextToSpeech.SUCCESS)
                 {
-                    Toast.makeText(MainActivity.this, "TTS Initialization Success "+i,Toast.LENGTH_SHORT);
+                    Toast.makeText(MainActivity.this, "TTS Initialization Success "+i,Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
@@ -90,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("logs/OCRIMAGE");
+
+        Typeface tf = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/OpenDyslexic3-Regular.ttf");
 
 
         final ImageView imageView = findViewById(R.id.imageViewOCRIMAGE);
@@ -144,16 +154,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnSummary.setTypeface(tf);
+        btnTTS.setTypeface(tf);
+        btnTTSStop.setTypeface(tf);
+
         btnTTS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Toast.makeText(MainActivity.this, "Text: "+text, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Text: "+text, Toast.LENGTH_SHORT).show();
+
+                tts.stop();
 
                 if(text.equals(""))
                 {
                     tts.setLanguage(Locale.ENGLISH);
-                    int status = tts.speak("Hello WOrld",TextToSpeech.QUEUE_FLUSH,null,null);
+                    int status = tts.speak("Full Text..",TextToSpeech.QUEUE_FLUSH,null,null);
 
                     if(status == TextToSpeech.ERROR)
                     {
@@ -172,6 +188,41 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
+
+            }
+        });
+
+        btnSummary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tts.stop();
+
+                if(text.equals(""))
+                {
+                    tts.setLanguage(Locale.ENGLISH);
+                    int status = tts.speak("Summarized Text..",TextToSpeech.QUEUE_FLUSH,null,null);
+
+                    if(status == TextToSpeech.ERROR)
+                    {
+                        Toast.makeText(MainActivity.this, "Error in talking the content .. 3", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+                else
+                {
+                    tts.setLanguage(Locale.ENGLISH);
+                    int status = tts.speak(arraylistText.toString(), TextToSpeech.QUEUE_FLUSH, null, null);
+
+                    if(status == TextToSpeech.ERROR)
+                    {
+                        Toast.makeText(MainActivity.this, "Error in talking the content .. 4", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+
+
 
             }
         });
@@ -206,7 +257,9 @@ public class MainActivity extends AppCompatActivity {
 
         final TextView textView = findViewById(R.id.textOCR);
 
-        final Typeface tf = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/OpenDyslexic3-Regular.ttf");
+        //final TextView textView1 = findViewById(R.id.text_Summaarized);
+
+        final Typeface tf = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/OpenDyslexic-Italic.ttf");
 
         Log.d("TEXT OCR", "TEXT CHECK - 1");
 
@@ -218,7 +271,9 @@ public class MainActivity extends AppCompatActivity {
                                 // Task completed successfully
                                 // ...
 
+
                                 for (FirebaseVisionText.TextBlock block: firebaseVisionText.getTextBlocks()) {
+
 
                                     text = block.getText();
 
@@ -226,20 +281,9 @@ public class MainActivity extends AppCompatActivity {
 
                                     textView.setText(text);
 
+                                   keywordAnalysing(text);
 
 
-                                    for (FirebaseVisionText.Line line: block.getLines()) {
-
-                                        //text = line.getText();
-                                      //  textView.setText(text);
-
-                                        for (FirebaseVisionText.Element element: line.getElements()) {
-
-                                            //text = element.getText();
-                                            //textView.setText(text);
-
-                                        }
-                                    }
                                 }
                             }
                         })
@@ -253,53 +297,149 @@ public class MainActivity extends AppCompatActivity {
                                 });
 
 
-        detectorDoc.processImage(image)
-                .addOnSuccessListener(new OnSuccessListener<FirebaseVisionDocumentText>() {
-                    @Override
-                    public void onSuccess(FirebaseVisionDocumentText result) {
-                        // Task completed successfully
-                        // ...
-
-                        //String text;
-
-                        for(FirebaseVisionDocumentText.Block block : result.getBlocks())
-                        {
-
-
-                            //text = block.getText();
-                            //textView.setText(text);
-
-                            /*for (FirebaseVisionDocumentText.Paragraph paragraph : block.getParagraphs())
-                            {
-                                text = paragraph.getText();
-                                //textView.setText(text);
-
-                              *//*for (FirebaseVisionDocumentText.Word word : paragraph.getWords())
-                                {
-                                    //text = word.getText();
-                                    //textView.setText(text);
-
-                                   *//**//*for (FirebaseVisionDocumentText.Symbol symbol : word.getSymbols())
-                                        text = symbol.getText();
-                                    textView.setText(text);*//**//*
-
-                                }*//*
-                            }*/
-                        }
-
-
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Task failed with an exception
-                        // ...
-                    }
-                });
 
     }
+
+/*
+    public void keywordAnalysing(String str) {
+
+
+
+        TextView textView = findViewById(R.id.text_Summaarized);
+
+        String textString = "";
+        //int i = 0; //starting index..
+        int flag = 0;
+        int flag1;
+        int flagCheck = 0;
+        int count = 0;
+
+        // parent loop
+        for (int i = 0; i < str.length(); i++) // the loop for overall counting of characters right from the top to the end of the string..
+        {
+
+            //System.out.println(str.charAt(i));
+            //When there is no space or '.' or ',' the word is included as a consideration for keyword possibility..
+            if ((!Character.isWhitespace(str.charAt(i))) && (str.charAt(i) != '.') && (str.charAt(i) != ',')) {
+                count++;
+                textString += str.charAt(i);
+                flag1 = 0;
+                //i++;
+            } else { // once a character from the above is encountered, consider the word.
+                flag1 = 1;
+            }
+
+            if ((flag1 == 1) && (Character.isWhitespace(str.charAt(i)))) {
+                flag = 0;
+            }
+
+            if ((flag1 == 0) && (str.charAt(i) == '.')) {
+                flag = 1;
+            }
+
+            if (flag == 0 && flag1 == 1) {
+                if (count > 2) { //A minimum of three words has to be be there for a keyword.
+
+                    flagCheck = 0;
+
+                    for(int j=0;j<arraylistText.size();j++)
+                    {
+                        String text = arraylistText.get(j);
+                        if(text.equalsIgnoreCase(textString) || text.contains(textString))
+                        {
+                            Log.i("FLAG CHECK: ",".."+j);
+
+                            flagCheck = 1;
+                            break;
+                        }
+                    }
+
+                    if (count == 3 && flagCheck == 0) {
+
+
+                        if (checkFullWordCaps(textString)) {
+                            arraylistText.add(textString);
+                            textString = "";
+                            count = 0;
+                        } else {
+                            textString = "";
+                            count = 0;
+                        }
+
+                    } else if (count > 3) {
+                        //Perform the keyword analysis here...
+
+                        if (checkFirstLetCaps(textString)) {
+                            arraylistText.add(textString);
+                            textString = "";
+                            count = 0;
+                        } else if (checkFullWordCaps(textString)) {
+                            arraylistText.add(textString);
+                            textString = "";
+                            count = 0;
+                        } else if (checkWordInQuotes(textString)) {
+                            arraylistText.add(textString);
+                            textString = "";
+                            count = 0;
+                        } else if (checkHypensInWord(textString)) {
+                            arraylistText.add(textString);
+                            textString = "";
+                            count = 0;
+                        } else if (count > 7) {
+                            arraylistText.add(textString);
+                            textString = "";
+                            count = 0;
+                        } else {
+                            textString = "";
+                            count = 0;
+                        }
+
+                    }
+
+                } else {
+                    textString = "";
+                    count = 0;
+                }
+            }
+        }
+
+        Typeface tf = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/OpenDyslexic-Italic.ttf");
+        textView.setTypeface(tf);
+        textView.setText(arraylistText.toString());
+
+        //System.out.println("The keywords in the given line are: " + arraylistText);
+
+    }
+
+    public boolean checkFirstLetCaps(String capCheckString) {
+
+        return Character.isUpperCase(capCheckString.charAt(0));
+    }
+
+    public boolean checkFullWordCaps(String capCheckFullString) {
+
+        //int i = 1;
+        int flag = 0;
+        char[] charArray = capCheckFullString.toCharArray();
+
+        for (int i = 0; i < charArray.length; i++) {
+            if (!Character.isUpperCase(charArray[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean checkWordInQuotes(String quoteCheckString) {
+
+        return (quoteCheckString.startsWith("\"") && quoteCheckString.endsWith("\""));
+    }
+
+    public boolean checkHypensInWord(String hyphenCheckString) {
+
+        return hyphenCheckString.contains("-");
+    }*/
 
     @Override
     public void onStart() {
