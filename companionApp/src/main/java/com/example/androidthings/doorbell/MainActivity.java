@@ -48,6 +48,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Locale;
 
 //import com.firebase.client.ValueEventListener;
@@ -57,7 +58,11 @@ public class MainActivity extends AppCompatActivity {
     //private DoorbellEntryAdapter mAdapter;
     //private FirebaseStorage mFirebaseStorage;
 
+
+
     ArrayList<String> arraylistText = new ArrayList<>();
+
+    String summarizedText = "";
 
     String text = "";
 
@@ -71,14 +76,17 @@ public class MainActivity extends AppCompatActivity {
         Button btnTTS = findViewById(R.id.btnTTS);
         Button btnSummary = findViewById(R.id.btnSummary);
         Button btnTTSStop = findViewById(R.id.btnTTSStop);
+        //Button btnKeywords = findViewById(R.id.btnKeywords);
 
         TextView textView1 = findViewById(R.id.textHeading1);
         TextView textView2 = findViewById(R.id.textHeading2);
+//        TextView textView3 = findViewById(R.id.textHeading3);
 
         Typeface tftf = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/OpenDyslexic-Bold.ttf");
 
         textView1.setTypeface(tftf);
         textView2.setTypeface(tftf);
+       // textView3.setTypeface(tftf);
 
         final TextToSpeech tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -157,7 +165,43 @@ public class MainActivity extends AppCompatActivity {
         btnSummary.setTypeface(tf);
         btnTTS.setTypeface(tf);
         btnTTSStop.setTypeface(tf);
+        //btnKeywords.setTypeface(tf);
 
+        /*btnKeywords.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tts.stop();
+
+                if(text.equals(""))
+                {
+                    tts.setLanguage(Locale.ENGLISH);
+
+                    int status = tts.speak("KEywords..",TextToSpeech.QUEUE_FLUSH,null,null);
+
+                    if(status == TextToSpeech.ERROR)
+                    {
+                        Toast.makeText(MainActivity.this, "Error in talking the content .. Keywords", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+                else
+                {
+                    tts.setLanguage(Locale.ENGLISH);
+                    Toast.makeText(MainActivity.this,"KEYWORDS.",Toast.LENGTH_SHORT).show();
+                    int status = tts.speak(arraylistText.toString(), TextToSpeech.QUEUE_FLUSH, null, null);
+
+                    if(status == TextToSpeech.ERROR)
+                    {
+                        Toast.makeText(MainActivity.this, "Error in talking the content .. Keywords AL", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+
+            }
+        });
+*/
         btnTTS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -169,22 +213,24 @@ public class MainActivity extends AppCompatActivity {
                 if(text.equals(""))
                 {
                     tts.setLanguage(Locale.ENGLISH);
+
                     int status = tts.speak("Full Text..",TextToSpeech.QUEUE_FLUSH,null,null);
 
                     if(status == TextToSpeech.ERROR)
                     {
-                        Toast.makeText(MainActivity.this, "Error in talking the content .. 1", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Error in talking the content .. Full Text", Toast.LENGTH_SHORT).show();
                     }
 
                 }
                 else
                 {
                     tts.setLanguage(Locale.ENGLISH);
+                    Toast.makeText(MainActivity.this,"FULL TEXT.",Toast.LENGTH_SHORT).show();
                     int status = tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
 
                     if(status == TextToSpeech.ERROR)
                     {
-                        Toast.makeText(MainActivity.this, "Error in talking the content .. 2", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Error in talking the content .. Full Text Text", Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -201,22 +247,24 @@ public class MainActivity extends AppCompatActivity {
                 if(text.equals(""))
                 {
                     tts.setLanguage(Locale.ENGLISH);
+
                     int status = tts.speak("Summarized Text..",TextToSpeech.QUEUE_FLUSH,null,null);
 
                     if(status == TextToSpeech.ERROR)
                     {
-                        Toast.makeText(MainActivity.this, "Error in talking the content .. 3", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Error in talking the content .. Summarized Text", Toast.LENGTH_SHORT).show();
                     }
 
                 }
                 else
                 {
                     tts.setLanguage(Locale.ENGLISH);
-                    int status = tts.speak(arraylistText.toString(), TextToSpeech.QUEUE_FLUSH, null, null);
+                    Toast.makeText(MainActivity.this,"SUMMARY.",Toast.LENGTH_SHORT).show();
+                    int status = tts.speak(summarizedText, TextToSpeech.QUEUE_FLUSH, null, null);
 
                     if(status == TextToSpeech.ERROR)
                     {
-                        Toast.makeText(MainActivity.this, "Error in talking the content .. 4", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Error in talking the content .. Summarized Text Text", Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -231,6 +279,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                Toast.makeText(MainActivity.this,"STOP.",Toast.LENGTH_SHORT).show();
                 tts.stop();
 
             }
@@ -246,24 +295,47 @@ public class MainActivity extends AppCompatActivity {
         FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance()
                 .getOnDeviceTextRecognizer();
 
+        FirebaseVisionDocumentTextRecognizer det = FirebaseVision.getInstance().getCloudDocumentTextRecognizer();
+
         FirebaseVisionImageMetadata metadata = new FirebaseVisionImageMetadata.Builder()
                 .setWidth(480)   // 480x360 is typically sufficient for
                 .setHeight(360)  // image recognition
                 .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
                 .build();
 
-        FirebaseVisionDocumentTextRecognizer detectorDoc = FirebaseVision.getInstance()
+    /*    FirebaseVisionDocumentTextRecognizer detectorDoc = FirebaseVision.getInstance()
                 .getCloudDocumentTextRecognizer();
-
+*/
         final TextView textView = findViewById(R.id.textOCR);
-
-        //final TextView textView1 = findViewById(R.id.text_Summaarized);
 
         final Typeface tf = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/OpenDyslexic-Italic.ttf");
 
         Log.d("TEXT OCR", "TEXT CHECK - 1");
 
-        Task<FirebaseVisionText> result =
+        /*Task<FirebaseVisionDocumentText> res = det.processImage(image).addOnSuccessListener(new OnSuccessListener<FirebaseVisionDocumentText>() {
+            @Override
+            public void onSuccess(FirebaseVisionDocumentText firebaseVisionDocumentText) {
+
+                for (FirebaseVisionDocumentText.Block block : firebaseVisionDocumentText.getBlocks()) {
+
+                    text = block.getText();
+                    textView.setTypeface(tf);
+                    textView.setText(text);
+                    //keywordAnalysing(text);
+
+
+                    extractiveSummarization(text);
+
+                    Log.i("TEXT API..", "summary 1");
+
+                    //textSummarization.execute();
+
+
+                }
+            }
+        });
+*/
+       Task<FirebaseVisionText> result =
                 detector.processImage(image)
                         .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
                             @Override
@@ -274,15 +346,23 @@ public class MainActivity extends AppCompatActivity {
 
                                 for (FirebaseVisionText.TextBlock block: firebaseVisionText.getTextBlocks()) {
 
-
                                     text = block.getText();
-
                                     textView.setTypeface(tf);
-
                                     textView.setText(text);
+                                    //keywordAnalysing(text);
 
-                                   keywordAnalysing(text);
 
+                                    extractiveSummarization(text);
+
+
+                                    for(FirebaseVisionText.Line line : block.getLines()) {
+
+
+                                        Log.i("TEXT API..", "summary 1");
+
+                                        //textSummarization.execute();
+
+                                    }
 
                                 }
                             }
@@ -297,15 +377,109 @@ public class MainActivity extends AppCompatActivity {
                                 });
 
 
+    }
+
+    public void extractiveSummarization(String textString)
+    {
+
+        int len = textString.length();
+
+        System.out.println("Full Text:\n"+textString+"\n Length: "+len);
+
+        TextView textView = findViewById(R.id.text_Summaarized);
+        Typeface tf = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/OpenDyslexic-Italic.ttf");
+
+        ArrayList<String> alSentences;
+       // String summarizedContext = "";
+
+
+        System.out.println("Full Text:\n"+textString+"\nTotal Length: "+textString.length());
+
+        alSentences = sentenceConvertion(textString);
+
+        summarizedText = textRanking(alSentences);
+
+        //System.out.println("Summarized Text:\n"+summarizedText+"\nCompressed Length: "+summarizedText.length());
+
+        textView.setTypeface(tf);
+        textView.setText(summarizedText);
 
     }
 
-/*
+    public ArrayList<String> sentenceConvertion(String text) {
+
+        //get each sentence..
+        //remove unnecessary words..
+        //retain the same sentence..
+        //unnecessary words are feeded by the user.
+        //The Possible unnecessary words could be as follows: 'a','is','has','was','an','for','if','had','have','were','it','the','though',
+        //'as','its','it's'.
+        String sentence = "";
+        int len = text.length();
+
+        LinkedList<String> llWords = new LinkedList<>();
+        ArrayList<String> alSentences = new ArrayList<>();
+
+        int i = 0;
+        while (i < len) {
+
+       /*     if (text.charAt(i) == '@') {
+                checkAT = true;
+            }
+
+       */     if ((text.charAt(i) != '.')) {
+                sentence += text.charAt(i);
+                // i++;
+            } else {
+                alSentences.add(sentence);
+                sentence = "";
+            }
+
+            i++;
+        }
+
+        return alSentences;
+
+    }
+
+    public String textRanking(ArrayList<String> sentences) {
+
+        int len = sentences.size();
+
+        String sentence = "";
+
+        if (len >= 10) {
+            int _0_per = 0;
+            int _25_per = len / 4;
+            int _50_per = len / 2;
+            int _75_per = (3 * len) / 4;
+            int _100_per = len - 1;
+
+
+
+            sentence += sentences.get(_0_per) + ".\n" + sentences.get(_25_per) + ".\n" + sentences.get(_50_per) + ".\n" + sentences.get(_75_per) + ".\n" + sentences.get(_100_per) + ".";
+
+            System.out.println("Summarized Text:\n" + sentence + "\nLength: " + sentence.length());
+
+        } else if (len < 10 && len > 4) {
+            int _0_per = 0;
+            int _75_per = (3 * len) / 4;
+
+            sentence += sentences.get(_0_per) + ".\n" + sentences.get(_75_per) + ".";
+
+            System.out.println("Summarized Text:\n" + sentence + "\nLength: " + sentence.length());
+
+        }
+
+        return sentence;
+
+    }
+
     public void keywordAnalysing(String str) {
 
 
 
-        TextView textView = findViewById(R.id.text_Summaarized);
+        //TextView textView = findViewById(R.id.text_Keywords);
 
         String textString = "";
         //int i = 0; //starting index..
@@ -404,8 +578,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Typeface tf = Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/OpenDyslexic-Italic.ttf");
-        textView.setTypeface(tf);
-        textView.setText(arraylistText.toString());
+        //textView.setTypeface(tf);
+        //textView.setText(arraylistText.toString());
 
         //System.out.println("The keywords in the given line are: " + arraylistText);
 
@@ -439,7 +613,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean checkHypensInWord(String hyphenCheckString) {
 
         return hyphenCheckString.contains("-");
-    }*/
+    }
 
     @Override
     public void onStart() {

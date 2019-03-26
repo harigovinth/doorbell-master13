@@ -56,7 +56,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="#000000"
-            android:text="What the context is about:"
+            android:text="Summarized Text:"
             android:layout_marginLeft="20dp"
             android:layout_below="@id/textOCR"
             android:layout_marginTop="10dp"
@@ -78,7 +78,35 @@
             android:layout_marginTop="10dp"
             android:id="@+id/text_Summaarized"/>
 
+        <!--<TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:text="Keywords:"
+            android:layout_marginLeft="20dp"
+            android:layout_below="@id/text_Summaarized"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:id="@+id/textHeading3"/>
 
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginBottom="10dp"
+            android:text="Keywords..."
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="20dp"
+            android:layout_below="@id/textHeading3"
+            android:layout_marginTop="10dp"
+            android:id="@+id/text_Keywords"/>
+
+-->
         <LinearLayout
             android:layout_height="70dp"
             android:layout_width="match_parent"
@@ -101,10 +129,11 @@
                         android:layout_height="150dp"
                         android:layout_centerInParent="true"
                         android:id="@+id/btnTTS"
+                        android:textSize="10sp"
                         android:fontFamily="sans-serif-condensed"
                         android:textStyle="bold"
                         android:textColor="#000000"
-                        android:text="Know the full\ncontext"/>
+                        android:text="full\ncontext"/>
 
                 </RelativeLayout>
 
@@ -126,14 +155,41 @@
                         android:layout_height="150dp"
                         android:layout_centerInParent="true"
                         android:id="@+id/btnSummary"
+                        android:textSize="10sp"
                         android:fontFamily="sans-serif-condensed"
                         android:textStyle="bold"
                         android:textColor="#000000"
-                        android:text="Know the summarized context "/>
+                        android:text="summary "/>
 
                 </RelativeLayout>
 
             </LinearLayout>
+
+            <!--<LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_centerInParent="true"
+                        android:id="@+id/btnKeywords"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textStyle="bold"
+                        android:textSize="10sp"
+                        android:textColor="#000000"
+                        android:text="keywords "/>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+-->
 
         </LinearLayout>
 
